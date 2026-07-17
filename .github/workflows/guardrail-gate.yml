@@ -1,0 +1,201 @@
+name: guardrail-gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write        # needed to publish the verdict record to the gh-pages dashboard branch
+  pull-requests: write
+
+jobs:
+  bob-audit:
+    name: bob-guardrail-audit
+    runs-on: ubuntu-latest
+    env:
+      BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
+      VERDICT_JSON: /tmp/verdict.json   # parse-verdict.py writes the machine-readable verdict here
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Bob Shell
+        # The installer reads /dev/tty for package-manager selection, which
+        # hangs on a runner with no terminal. --pm npm skips that prompt.
+        # It installs via `npm install -g`, so the npm global bin goes on PATH.
+        run: |
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm
+          echo "$(npm prefix -g)/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Bob is on PATH
+        run: bob --version
+
+      - name: Pin the rulebook to main
+        # A PR must not be able to weaken the rules that judge it. Restore the
+        # governance files to their committed state on the base branch before
+        # auditing. The PR's changes to these files still appear in the diff
+        # below (computed from git history), so Bob can flag the tampering —
+        # but it judges using main's canonical rules and audit prompt.
+        run: |
+          git fetch -q origin "${{ github.base_ref }}"
+          git checkout "origin/${{ github.base_ref }}" -- \
+            .bob/rules .bob/skills .bobignore governance/audit-prompt.md governance/parse-verdict.py \
+            governance/dashboard-record.py governance/protected-guard.py governance/notify-wxo.py \
+            dashboard/index.html
+
+      - name: Deterministic governance guard (no LLM)
+        # Hard, path-based block that runs BEFORE the model audit: any PR whose
+        # diff touches .bob/, .bobignore, governance/, or .github/ fails here.
+        # Governance is admin-only — updated by pushing to main, never via a PR —
+        # so this can't be talked around. Runs main's pinned guard script above.
+        run: |
+          git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            | python3 governance/protected-guard.py /tmp/verdict.md
+
+      - name: Rules-loaded smoke test
+        # Fails the build if Bob did not actually load the workspace rules.
+        # The canary rule lives in .bob/rules/, so this also blocks any PR
+        # that deletes the rules directory outright.
+        run: |
+          out=$(bob --auth-method api-key --chat-mode advanced --accept-license --hide-intermediary-output \
+            "What is the governance canary token? Reply with only the token.")
+          echo "smoke test output: $out"
+          echo "$out" | grep -q "UTILITY-SAFE-CONSTITUTION-CANARY-4A17" \
+            || { echo "FAIL: workspace rules did not load — refusing to audit without rules."; exit 1; }
+
+      - name: Bob audit of PR diff (fail closed)
+        # Read-only headless audit: no --yolo, so Bob cannot write files.
+        # The diff goes in on stdin; the audit instructions are the prompt.
+        # An unparseable verdict is retried once, then fails closed; a real
+        # FAIL verdict is never retried.
+        run: |
+          # Include change-log/ in the diff so the audit can verify the required
+          # change-log record exists and is complete (rule 03 / check 9).
+          git diff "origin/${{ github.base_ref }}...HEAD" > /tmp/pr.diff
+          if [ ! -s /tmp/pr.diff ]; then
+            echo "Empty diff — nothing to audit."
+            echo '{"verdict": "PASS", "violations": []}' \
+              | python3 governance/parse-verdict.py /tmp/verdict.md
+            exit $?
+          fi
+          set +e
+          rc=3
+          for attempt in 1 2; do
+            bob --auth-method api-key --chat-mode advanced --hide-intermediary-output \
+              "$(cat governance/audit-prompt.md)" < /tmp/pr.diff > /tmp/audit-out.txt
+            cat /tmp/audit-out.txt
+            python3 governance/parse-verdict.py /tmp/verdict.md < /tmp/audit-out.txt
+            rc=$?
+            [ "$rc" -ne 3 ] && break
+            echo "No parseable verdict (attempt $attempt) — retrying once."
+          done
+          exit "$rc"
+
+      - name: Post verdict as PR comment
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          [ -f /tmp/verdict.md ] || printf '## Guardrail audit\n\n**Verdict: ERROR** — audit job failed before producing a verdict.\n' > /tmp/verdict.md
+          python3 - <<'EOF'
+          import json, os, urllib.request
+          body = open("/tmp/verdict.md").read()
+          url = "{}/repos/{}/issues/{}/comments".format(
+              os.environ["GITHUB_API_URL"],
+              os.environ["GITHUB_REPOSITORY"],
+              os.environ["PR_NUMBER"],
+          )
+          req = urllib.request.Request(
+              url,
+              data=json.dumps({"body": body}).encode(),
+              headers={
+                  "Authorization": "token " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+              },
+          )
+          print("comment:", urllib.request.urlopen(req).status)
+          EOF
+
+      - name: Record verdict to governance dashboard (gh-pages)
+        # Publishes an enriched, append-only record (verdict + violations +
+        # severity + who/what/when) to the gh-pages branch, which the Pages
+        # dashboard reads. Runs from main's pinned dashboard-record.py, never the
+        # PR's copy, since this step holds a write token. Never blocks the gate.
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DB_ACTOR: ${{ github.event.pull_request.user.login }}
+          DB_TRIGGERED_BY: ${{ github.actor }}
+          DB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          DB_PR_TITLE: ${{ github.event.pull_request.title }}
+          DB_PR_URL: ${{ github.event.pull_request.html_url }}
+          DB_BRANCH: ${{ github.event.pull_request.head.ref }}
+          DB_BASE: ${{ github.event.pull_request.base.ref }}
+          DB_SHA: ${{ github.event.pull_request.head.sha }}
+          DB_REPO: ${{ github.repository }}
+          DB_RUN_ID: ${{ github.run_id }}
+          DB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export DB_COMMIT_MSG="$(git log -1 --pretty=%s "$DB_SHA" 2>/dev/null || echo '')"
+          export DB_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          WORK="$(mktemp -d)"
+          if ! git clone --depth 1 --branch gh-pages "$REPO_URL" "$WORK" 2>/dev/null; then
+            git clone --depth 1 "$REPO_URL" "$WORK"
+            git -C "$WORK" checkout --orphan gh-pages
+            git -C "$WORK" rm -rf . >/dev/null 2>&1 || true
+          fi
+          git -C "$WORK" config user.name  "bob-guardrail[bot]"
+          git -C "$WORK" config user.email "bob-guardrail@users.noreply.github.com"
+          mkdir -p "$WORK/data"
+          [ -f "$WORK/data/violations.json" ] || echo '[]' > "$WORK/data/violations.json"
+          cp "$GITHUB_WORKSPACE/dashboard/index.html" "$WORK/index.html"
+          for attempt in 1 2 3 4 5; do
+            python3 "$GITHUB_WORKSPACE/governance/dashboard-record.py" "$WORK/data/violations.json"
+            git -C "$WORK" add -A
+            git -C "$WORK" commit -q -m "dashboard: ${DB_ACTOR} PR #${DB_PR_NUMBER} — audit verdict" || true
+            if git -C "$WORK" push origin gh-pages 2>/dev/null; then
+              echo "dashboard updated (attempt $attempt)"; break
+            fi
+            echo "push rejected — syncing with remote and retrying ($attempt)"
+            git -C "$WORK" fetch -q origin gh-pages && git -C "$WORK" reset --hard origin/gh-pages
+            cp "$GITHUB_WORKSPACE/dashboard/index.html" "$WORK/index.html"
+          done
+
+      - name: Notify watsonx Orchestrate governance agent
+        # Best-effort, fail-open: send the verdict to the shared wxO governance
+        # agent, which records it in watsonx.governance (an OpenPages Issue per
+        # violation + trend metrics) and emails on a violation. Multi-repo: the
+        # event carries repo + project, so one agent serves every repo. Skips
+        # silently if the WXO_* secrets aren't set; never blocks the gate. Runs
+        # main's pinned notify-wxo.py, never the PR's copy.
+        if: always()
+        continue-on-error: true
+        env:
+          WXO_API_KEY: ${{ secrets.WXO_API_KEY }}
+          WXO_AGENT_URL: ${{ secrets.WXO_AGENT_URL }}
+          DB_PROJECT: ${{ vars.GOV_PROJECT || 'UTILITY-AIDLC' }}
+          DB_ACTOR: ${{ github.event.pull_request.user.login }}
+          DB_TRIGGERED_BY: ${{ github.actor }}
+          DB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          DB_PR_TITLE: ${{ github.event.pull_request.title }}
+          DB_PR_URL: ${{ github.event.pull_request.html_url }}
+          DB_BRANCH: ${{ github.event.pull_request.head.ref }}
+          DB_BASE: ${{ github.event.pull_request.base.ref }}
+          DB_SHA: ${{ github.event.pull_request.head.sha }}
+          DB_REPO: ${{ github.repository }}
+          DB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export DB_COMMIT_MSG="$(git log -1 --pretty=%s "$DB_SHA" 2>/dev/null || echo '')"
+          export DB_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 governance/notify-wxo.py

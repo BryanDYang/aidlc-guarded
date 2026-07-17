@@ -1,0 +1,13 @@
+# Secrets — Bob must not read these
+.env
+.env.*
+secrets/
+*.pem
+*.key
+id_rsa*
+
+# Build artifacts and noise
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

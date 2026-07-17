@@ -1,0 +1,6 @@
+# Changes to the guardrail system require code-owner review.
+/.bob/           @BryanDYang
+/.bobignore      @BryanDYang
+/.github/        @BryanDYang
+/governance/     @BryanDYang
+/dashboard/      @BryanDYang
