@@ -1,0 +1,187 @@
+<mxfile host="65bd71144e">
+    <diagram id="mHiPqkAgfbJGAKlEjcYd" name="Page-1">
+        <mxGraphModel dx="1250" dy="1157" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Layer 1 — GitHub Actions (guardrail-gate.yml)" style="swimlane;startSize=36;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;fontColor=#1e3a5f;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="1060" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="PR opened against main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" parent="2" vertex="1">
+                    <mxGeometry x="30" y="70" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Deterministic Guard&#10;path check&#10;(.bob/ .github/ governance/)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="220" y="70" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Canary Smoke Test&#10;rules loaded?" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="420" y="70" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Bob Headless Audit&#10;10-point check" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="610" y="70" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Verdict?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" parent="2" vertex="1">
+                    <mxGeometry x="820" y="55" width="110" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="FAIL — blocked&#10;reason posted to PR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="810" y="215" width="140" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Post Verdict as&#10;PR Comment (always)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="600" y="215" width="150" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Record to GitHub Pages&#10;Dashboard (always)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="400" y="215" width="150" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="notify-wxo.py&#10;POST aidlc-governance-event/v1&#10;(always, fail-open)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0a30a;strokeColor=#BD7000;fontColor=#000000;fontStyle=1;fontSize=11;" parent="2" vertex="1">
+                    <mxGeometry x="170" y="215" width="180" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="" parent="2" source="3" target="4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="" parent="2" source="4" target="5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="52" value="" parent="2" source="5" target="6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="" parent="2" source="6" target="7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="always" parent="2" source="7" target="9" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="" parent="2" source="9" target="10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" value="" parent="2" source="10" target="11" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="FAIL" style="strokeColor=#b85450;fontColor=#b85450;fontStyle=1;" parent="2" source="7" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Layer 2 — watsonx Orchestrate (Governance Agent — repo: aidlc-governance-agent)" style="swimlane;startSize=36;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=14;fontColor=#4a235a;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="490" width="1060" height="420" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="Governance Agent&#10;receives aidlc-governance-event/v1&#10;&#10;Semantic routing · Cross-repo fan-out&#10;Conversational Q&amp;A · Fallback logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673a6;strokeColor=#6d4f8a;fontColor=#ffffff;fontStyle=1;fontSize=12;" parent="12" vertex="1">
+                    <mxGeometry x="390" y="60" width="230" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="Tool: record_pr_verdict&#10;persist to verdict store" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="30" y="82.5" width="180" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Tool: query_verdict_dashboard&#10;conversational governance Q&amp;A" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="30" y="175" width="180" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="Tool: update_openpages_metrics&#10;pass/fail trend counters (every verdict)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="240" y="230" width="200" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="Tool: create_or_update_openpages_issue&#10;one Issue per violation (FAIL)&#10;auto-close on PASS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="560" y="240" width="220" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="OpenPages&#10;healthy?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="600" y="135" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Tool: send_outlook_email&#10;FALLBACK ONLY&#10;fires when OpenPages is down" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff3cd;strokeColor=#f0a30a;fontStyle=1;fontSize=11;" parent="12" vertex="1">
+                    <mxGeometry x="820" y="155" width="190" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="1. record" parent="12" source="13" target="14" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="2. metrics (every verdict)" parent="12" source="13" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="3. Issue (FAIL/PASS)" parent="12" source="13" target="17" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="inspect return" parent="12" source="17" target="18" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="created/updated&#10;OpenPages WF fires&#10;native email" style="strokeColor=#107C10;fontColor=#107C10;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="12" source="18" target="17" edge="1">
+                    <mxGeometry x="0.4566" y="-29" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="555" y="175"/>
+                            <mxPoint x="500" y="220"/>
+                            <mxPoint x="555" y="273"/>
+                        </Array>
+                        <mxPoint x="570" y="280" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="63" value="failed — fallback" style="strokeColor=#f0a30a;fontColor=#f0a30a;fontStyle=1;fontSize=10;" parent="12" source="18" target="19" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Layer 3 — OpenPages (authoritative GRC record)" style="swimlane;startSize=36;fillColor=#d5e8d4;strokeColor=#107C10;fontStyle=1;fontSize=14;fontColor=#0a3d0a;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1010" width="1060" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="OpenPages Issue Record&#10;one per rule violation&#10;dedup: repo + pr + rule&#10;auto-close on PASS" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#107C10;strokeColor=#0E5A0E;fontColor=#ffffff;fontSize=11;" parent="20" vertex="1">
+                    <mxGeometry x="80" y="70" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="OpenPages Metrics Record&#10;pass/fail counters per repo&#10;violations by rule and actor" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#107C10;strokeColor=#0E5A0E;fontColor=#ffffff;fontSize=11;" parent="20" vertex="1">
+                    <mxGeometry x="430" y="70" width="190" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="OpenPages Workflow Engine&#10;fires native email on Issue Open&#10;Audited · Throttled · Retried by GRC" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#107C10;fontSize=11;" parent="20" vertex="1">
+                    <mxGeometry x="760" y="85" width="230" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" value="Issue Open/transition" style="strokeColor=#107C10;" parent="20" source="21" target="23" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="510" y="220"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="24" value="Outlook Email&#10;PRIMARY: OpenPages WF Engine&#10;Audited · Throttled · Retried" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=#001E4E;fontColor=#ffffff;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="860" y="1300" width="210" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="Outlook Email&#10;FALLBACK: wxO Graph API tool&#10;fires only if OpenPages is down" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3cd;strokeColor=#f0a30a;fontColor=#000000;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="930" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="POST aidlc-governance-event/v1&#10;WXO_API_KEY → IAM token exchange" style="dashed=1;strokeColor=#9673a6;fontColor=#9673a6;fontStyle=2;endArrow=block;endFill=1;fontSize=11;" parent="1" source="11" target="13" edge="1">
+                    <mxGeometry x="-0.2738" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="300" y="430"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="REST API — create/update Issue" style="strokeColor=#107C10;fontColor=#107C10;fontSize=10;" parent="1" source="17" target="21" edge="1">
+                    <mxGeometry x="-0.7757" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="710" y="930"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="67" value="REST API — increment counters" style="strokeColor=#107C10;fontColor=#107C10;fontSize=10;" parent="1" source="16" target="22" edge="1">
+                    <mxGeometry x="-0.5829" y="-3" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="380" y="940"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="68" value="native workflow email" style="strokeColor=#107C10;fontColor=#107C10;fontSize=10;" parent="1" source="23" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="915" y="1300" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="69" value="fallback only" style="strokeColor=#f0a30a;fontColor=#f0a30a;fontStyle=1;fontSize=10;" parent="1" source="19" target="25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="955" y="960"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="30" value="Why wxO is not just a connector:&#10;- Semantic routing — parses JSON, decides which tools to call&#10;- Conversational Q&amp;A — ad-hoc governance questions in plain English&#10;- Cross-repo fan-out — one agent serves every repo&#10;- Fallback logic — detects OpenPages failure, re-routes email&#10;- Future: escalation, team routing, dedup logic" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;align=left;spacingLeft=8;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1310" width="370" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="Payload field mapping (aidlc-governance-event/v1 to OpenPages):&#10;- violations[].rule   to   Control ID / Issue Type&#10;- violations[].detail   to   Issue Description&#10;- violations[].severity   to   Risk Rating (critical/high/medium)&#10;- actor   to   Reported By&#10;- pr_url   to   Evidence URL&#10;- repo + project   to   Business Entity&#10;- timestamp   to   Created Date&#10;- verdict=FAIL   to   Status = Open&#10;- verdict=PASS   to   Status = Closed (auto)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fffacd;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="1310" width="360" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="OpenPages owns email in production:&#10;- Audited in GRC audit log (CIP-010 traceable)&#10;- Throttled via IMR bulletin scheduling&#10;- Retried automatically on mail server failure&#10;- Template owned by compliance team&#10;- No extra Azure credentials needed in wxO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#107C10;fontColor=#0a3d0a;fontSize=11;align=left;spacingLeft=8;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="830" y="1380" width="270" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="Migration path (when ready):&#10;1. Create OpenPages schema + custom fields&#10;2. Configure WF Engine email template (Open stage)&#10;3. Deploy agent — verify OpenPages email arrives&#10;4. Remove send_outlook_email from tools list&#10;5. Remove OUTLOOK_* secrets and redeploy" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff3cd;strokeColor=#f0a30a;fontSize=11;align=left;spacingLeft=8;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1440" width="370" height="110" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
