@@ -1,5 +1,31 @@
 [
   {
+    "id": "29611037317-64c2d02",
+    "timestamp": "2026-07-17T20:24:08Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": ".github/workflows/guardrail-gate.yml",
+        "rule": "06-governance-protection.md",
+        "detail": "Protected governance file modified in a pull request; the .bob/, governance/, .github/, and .bobignore paths are admin-only and cannot change through a PR (deterministic block).",
+        "severity": "critical"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "1",
+    "pr_title": "chore: trigger gh-pages branch creation",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/1",
+    "branch": "chore/trigger-pages",
+    "base_ref": "main",
+    "sha": "64c2d02",
+    "commit_message": "Potential fix for pull request finding",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29611037317"
+  },
+  {
     "id": "29610773559-406bcd1",
     "timestamp": "2026-07-17T20:19:49Z",
     "verdict": "FAIL",
