@@ -67,7 +67,7 @@ jobs:
           out=$(bob --auth-method api-key --chat-mode advanced --accept-license --hide-intermediary-output \
             "What is the governance canary token? Reply with only the token.")
           echo "smoke test output: $out"
-          echo "$out" | grep -q "UTILITY-SAFE-CONSTITUTION-CANARY-4A17" \
+          echo "$out" | grep -q "PGE-SAFE-CONSTITUTION-CANARY-4A17" \
             || { echo "FAIL: workspace rules did not load — refusing to audit without rules."; exit 1; }
 
       - name: Bob audit of PR diff (fail closed)
