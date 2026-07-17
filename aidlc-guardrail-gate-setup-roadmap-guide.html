@@ -1,0 +1,452 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AIDLC Guardrail Gate — Setup &amp; Roadmap</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px; line-height: 1.6;
+    background: #ffffff; color: #1f2328;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #57606a; margin-bottom: 32px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 32px 0 8px; padding-bottom: 6px;
+       border-bottom: 2px solid #3b82d4; color: #1f2328; }
+  h3 { font-size: 14px; font-weight: 600; margin: 20px 0 6px; color: #1f2328; }
+  p { margin-bottom: 10px; }
+  ul { margin: 0 0 10px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* Phase pipeline */
+  .pipeline { display: flex; gap: 0; margin: 16px 0 24px; }
+  .phase {
+    flex: 1; padding: 10px 12px; background: #f7f8fa;
+    border: 1px solid #e5e7eb; border-right: none;
+    font-size: 12px;
+  }
+  .phase:last-child { border-right: 1px solid #e5e7eb; }
+  .phase .num { font-size: 18px; font-weight: 700; color: #3b82d4; display: block; }
+  .phase .label { font-weight: 600; display: block; margin-bottom: 2px; }
+  .phase .sub { color: #57606a; font-size: 11px; }
+  .phase.done { background: #f0fdf4; border-color: #86efac; }
+  .phase.done .num { color: #16a34a; }
+  .phase.roadmap { background: #eff6ff; border-color: #93c5fd; }
+  .phase.roadmap .num { color: #3b82d4; }
+
+  /* Steps */
+  .steps { counter-reset: step; margin: 0 0 12px; }
+  .step {
+    counter-increment: step;
+    display: flex; gap: 14px; margin-bottom: 14px;
+    padding: 14px 16px; background: #f7f8fa;
+    border: 1px solid #e5e7eb; border-left: 4px solid #3b82d4;
+  }
+  .step::before {
+    content: counter(step);
+    font-size: 18px; font-weight: 700; color: #3b82d4;
+    min-width: 24px; text-align: center; padding-top: 2px;
+  }
+  .step .content { flex: 1; }
+  .step .title { font-weight: 600; margin-bottom: 4px; }
+  .step .desc { color: #1f2328; font-size: 13px; }
+  .step .note { font-size: 12px; color: #57606a; margin-top: 4px; }
+
+  code {
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 12px; background: #f0f2f5;
+    padding: 1px 5px; border-radius: 3px;
+    border: 1px solid #e5e7eb;
+  }
+  pre {
+    background: #1f2328; color: #e6edf3;
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 12px; padding: 14px 16px;
+    border-radius: 4px; overflow-x: auto;
+    margin: 10px 0;
+  }
+  pre .comment { color: #8b949e; }
+  pre .key { color: #79c0ff; }
+  pre .val { color: #a5d6ff; }
+  pre .str { color: #a5d6ff; }
+
+  /* Status badges */
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 1px 7px; border-radius: 10px; margin-left: 6px;
+  }
+  .badge.live { background: #dcfce7; color: #15803d; }
+  .badge.needed { background: #fef9c3; color: #854d0e; }
+  .badge.optional { background: #f3f4f6; color: #57606a; }
+
+  /* Secret table */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+  th { background: #f7f8fa; border: 1px solid #e5e7eb; padding: 7px 10px; text-align: left; font-weight: 600; }
+  td { border: 1px solid #e5e7eb; padding: 7px 10px; vertical-align: top; }
+  td.key-name { font-family: "SF Mono", "Consolas", monospace; font-size: 12px; }
+  td.req { text-align: center; font-weight: 600; }
+  td.req.y { color: #15803d; }
+  td.req.o { color: #b45309; }
+
+  /* Callout */
+  .callout {
+    padding: 12px 16px; border-radius: 4px; margin: 12px 0;
+    border-left: 4px solid;
+  }
+  .callout.info { background: #eff6ff; border-color: #3b82d4; color: #1e40af; }
+  .callout.warn { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+  .callout.success { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+
+  /* Flow diagram (pure CSS/SVG-free) */
+  .flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+  .flow-row { display: flex; align-items: stretch; }
+  .flow-box {
+    flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb;
+    background: #f7f8fa; font-size: 12px; text-align: center;
+  }
+  .flow-box.gate { background: #eff6ff; border-color: #93c5fd; font-weight: 600; }
+  .flow-box.pass { background: #f0fdf4; border-color: #86efac; }
+  .flow-box.fail { background: #fef2f2; border-color: #fca5a5; }
+  .flow-box.action { background: #fefce8; border-color: #fde68a; }
+  .flow-arr { display: flex; align-items: center; justify-content: center;
+              padding: 3px 0; color: #3b82d4; font-size: 16px; }
+  .flow-row-cols { display: flex; gap: 8px; }
+  .flow-row-cols .flow-box { flex: 1; }
+
+  .roadmap-card {
+    border: 1px solid #e5e7eb; border-radius: 4px;
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .roadmap-card .card-head {
+    padding: 10px 14px; background: #f7f8fa;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .roadmap-card .card-body { padding: 12px 14px; font-size: 13px; }
+  .roadmap-card .card-body ul { margin-left: 16px; }
+  .roadmap-card .card-body li { margin-bottom: 3px; }
+
+  footer {
+    margin-top: 48px; padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center; font-size: 11px; color: #57606a;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>AIDLC Guardrail Gate</h1>
+  <p class="subtitle">GitHub Action setup walkthrough · watsonx Orchestrate integration · OpenPages roadmap<br>
+  See also: <em>aidlc-guardrail-gate-prod-considerations.html</em> — architecture decisions, email routing, migration path</p>
+
+  
+  <div class="pipeline">
+    <div class="phase done">
+      <span class="num">①</span>
+      <span class="label">Bob + Constitution</span>
+      <span class="sub">Rules loaded at generation time</span>
+    </div>
+    <div class="phase done">
+      <span class="num">②</span>
+      <span class="label">GitHub Gate</span>
+      <span class="sub">CI audit on every PR to main</span>
+    </div>
+    <div class="phase done">
+      <span class="num">③</span>
+      <span class="label">Dashboard</span>
+      <span class="sub">Live GitHub Pages verdict log</span>
+    </div>
+    <div class="phase done">
+      <span class="num">④</span>
+      <span class="label">wxO Agent</span>
+      <span class="sub">Built · deploy when ready</span>
+    </div>
+    <div class="phase roadmap">
+      <span class="num">⑤</span>
+      <span class="label">OpenPages</span>
+      <span class="sub">Schema + WF email to configure</span>
+    </div>
+  </div>
+
+  
+  <h2>Part 1 — GitHub Action Setup</h2>
+
+  <p>Everything is already wired in <code>.github/workflows/guardrail-gate.yml</code>. You only need to configure three things in your GitHub repository settings:</p>
+
+  <h3>Step-by-step</h3>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="content">
+        <div class="title">Add the <code>BOBSHELL_API_KEY</code> repository secret</div>
+        <div class="desc">
+          The workflow installs Bob Shell via <code>curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash</code> and then authenticates headlessly with <code>--auth-method api-key</code>. Without this key the audit step errors.
+          <br /><br />
+          Go to <strong>Settings → Secrets and variables → Actions → New repository secret</strong>:<br />
+          Name: <code>BOBSHELL_API_KEY</code> · Value: your IBM Bob API key.
+        </div>
+        <div class="note">The key is used by <code>bob --auth-method api-key</code> inside the runner. It never appears in logs.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="content">
+        <div class="title">Enable branch protection on <code>main</code></div>
+        <div class="desc">
+          Go to <strong>Settings → Branches → Add branch ruleset</strong> (or classic protection) for <code>main</code>:<br /><br />
+          <ul>
+            <li>☑ Require a pull request before merging</li>
+            <li>☑ Require status checks to pass — add check: <code>bob-guardrail-audit</code></li>
+            <li>☑ Do not allow bypassing the above settings</li>
+            <li>☑ Restrict who can push to matching branches (admins only for direct push)</li>
+          </ul>
+        </div>
+        <div class="note">The check name must match exactly — it is the <code>name:</code> field inside the <code>bob-audit</code> job in the YAML: <code>bob-guardrail-audit</code>.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="content">
+        <div class="title">Enable GitHub Pages on the <code>gh-pages</code> branch</div>
+        <div class="desc">
+          The dashboard step clones / creates a <code>gh-pages</code> branch and pushes <code>index.html</code> + <code>data/violations.json</code> there after every PR run.<br /><br />
+          Go to <strong>Settings → Pages</strong>:<br />
+          Source: <strong>Deploy from a branch</strong> · Branch: <code>gh-pages</code> · Folder: <code>/ (root)</code>
+        </div>
+        <div class="note">The workflow uses <code>GITHUB_TOKEN</code> (auto-provided) to push. No extra secret needed for this step — the job already requests <code>contents: write</code>.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="content">
+        <div class="title">Confirm CODEOWNERS is respected</div>
+        <div class="desc">
+          <code>.github/CODEOWNERS</code> maps <code>/.bob/</code>, <code>/.bobignore</code>, <code>/.github/</code>, <code>/governance/</code>, and <code>/dashboard/</code> to <code>@BryanDYang</code>. Any PR touching those paths needs an approving review from that owner before it can merge — even if the bot audit passes.
+        </div>
+        <div class="note">Change the username to the right code-owner for your org before going to production.</div>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <h3>Secret / variable reference</h3>
+  <table>
+    <tr>
+      <th>Name</th><th>Where to set</th><th>Required</th><th>Purpose</th>
+    </tr>
+    <tr>
+      <td class="key-name">BOBSHELL_API_KEY</td>
+      <td>Repo secret</td>
+      <td class="req y">✔ Yes</td>
+      <td>Headless Bob authentication for the CI audit</td>
+    </tr>
+    <tr>
+      <td class="key-name">GITHUB_TOKEN</td>
+      <td>Auto-provided</td>
+      <td class="req y">✔ Auto</td>
+      <td>Post PR comment + push gh-pages dashboard</td>
+    </tr>
+    <tr>
+      <td class="key-name">WXO_API_KEY</td>
+      <td>Repo secret</td>
+      <td class="req o">◐ Roadmap</td>
+      <td>IBM Cloud IAM key to authenticate to wxO agent (exchanged for bearer token)</td>
+    </tr>
+    <tr>
+      <td class="key-name">WXO_AGENT_URL</td>
+      <td>Repo secret</td>
+      <td class="req o">◐ Roadmap</td>
+      <td>Full chat-completions URL of your wxO governance agent</td>
+    </tr>
+    <tr>
+      <td class="key-name">GOV_PROJECT</td>
+      <td>Repo variable (vars)</td>
+      <td class="req o">◐ Optional</td>
+      <td>Logical project key for grouping in wxO / OpenPages (default: <code>UTILITY-AIDLC</code>)</td>
+    </tr>
+  </table>
+
+  
+  <h3>What runs on every PR</h3>
+  <div class="flow">
+    <div class="flow-row"><div class="flow-box">PR opened against <code>main</code></div></div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row"><div class="flow-box gate">Pin rulebook from <code>main</code> (governance can't self-certify)</div></div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row"><div class="flow-box gate">Deterministic guard — did the PR touch <code>.bob/</code>, <code>governance/</code>, <code>.github/</code>, <code>.bobignore</code>?</div></div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row"><div class="flow-box gate">Canary smoke test — did Bob actually load the workspace rules?</div></div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row"><div class="flow-box gate">Bob headless audit (advanced, read-only) — 10-point review of the diff</div></div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row flow-row-cols">
+      <div class="flow-box pass">PASS → green, mergeable</div>
+      <div class="flow-box fail">FAIL → blocked + reason posted as PR comment</div>
+    </div>
+    <div class="flow-arr">▼</div>
+    <div class="flow-row flow-row-cols">
+      <div class="flow-box action">Dashboard record pushed to <code>gh-pages</code></div>
+      <div class="flow-box action">wxO governance agent notified (if secrets set)</div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <strong>Key design property:</strong> the last two steps (<em>dashboard</em> and <em>wxO notify</em>) are both <code>if: always()</code> + <code>continue-on-error: true</code> — they never block the gate. A governance or wxO outage cannot freeze the trunk.
+  </div>
+
+  
+  <h2>Part 2 — watsonx Orchestrate (wxO)</h2>
+
+  <p>The agent is built (<code>aidlc-governance-agent</code> repo). The CI workflow already calls <code>governance/notify-wxo.py</code> on every run — it skips silently if the two secrets aren't set. To activate:</p>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#3b82d4">①</span> Deploy the agent into your wxO environment</div>
+    <div class="card-body">
+      <p>The agent has 5 tools: <code>record_pr_verdict</code>, <code>query_verdict_dashboard</code>, <code>create_or_update_openpages_issue</code>, <code>update_openpages_metrics</code>, <code>send_outlook_email</code> (fallback only).</p>
+      <pre>cd aidlc-governance-agent
+orchestrate env activate &lt;your-env&gt;
+bash deploy.sh</pre>
+      <p>Then get the agent's chat URL: <code>orchestrate agents list --verbose</code> — copy the <code>chat_url</code>.</p>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#3b82d4">②</span> Set the two GitHub secrets</div>
+    <div class="card-body">
+      <ul>
+        <li><code>WXO_API_KEY</code> — IBM Cloud API key, exchanged for a short-lived IAM bearer token at runtime</li>
+        <li><code>WXO_AGENT_URL</code> — the chat-completions URL from the step above</li>
+      </ul>
+      <p>Once both are set the next PR run will automatically send governance events to the agent.</p>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#3b82d4">③</span> How the token exchange works</div>
+    <div class="card-body">
+      <p><code>notify-wxo.py</code> already implements this pattern — no changes needed:</p>
+      <pre><span class="comment"># 1. Exchange IBM Cloud API key → short-lived IAM bearer token</span>
+POST https://iam.cloud.ibm.com/identity/token
+  grant_type=urn:ibm:params:oauth:grant-type:apikey
+  apikey=<span class="val">$WXO_API_KEY</span>
+
+<span class="comment"># 2. POST the governance event to the wxO agent chat endpoint</span>
+POST <span class="val">$WXO_AGENT_URL</span>
+Authorization: Bearer <span class="str">&lt;iam_token&gt;</span>
+{
+  "stream": false,
+  "messages": [{"role": "user", "content": "<span class="str">&lt;event_json&gt;</span>"}]
+}</pre>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#3b82d4">④</span> Governance event schema</div>
+    <div class="card-body">
+      <p>Every event the gate sends follows <code>aidlc-governance-event/v1</code>:</p>
+      <pre>{
+  <span class="key">"schema"</span>:     <span class="str">"aidlc-governance-event/v1"</span>,
+  <span class="key">"source"</span>:     <span class="str">"github-actions"</span>,
+  <span class="key">"repo"</span>:       <span class="str">"org/repo-name"</span>,
+  <span class="key">"project"</span>:    <span class="str">"UTILITY-AIDLC"</span>,
+  <span class="key">"actor"</span>:      <span class="str">"dev-username"</span>,
+  <span class="key">"pr_number"</span>:  <span class="str">"42"</span>,
+  <span class="key">"verdict"</span>:    <span class="str">"FAIL"</span>,
+  <span class="key">"severity"</span>:   <span class="str">"critical"</span>,
+  <span class="key">"violation_count"</span>: 2,
+  <span class="key">"violations"</span>: [
+    { <span class="key">"file"</span>: <span class="str">"api/customers.py"</span>,
+      <span class="key">"rule"</span>: <span class="str">"01-secure-coding.md"</span>,
+      <span class="key">"detail"</span>: <span class="str">"Hardcoded API key..."</span>,
+      <span class="key">"severity"</span>: <span class="str">"critical"</span> }
+  ],
+  <span class="key">"run_url"</span>:    <span class="str">"https://github.com/.../actions/runs/..."</span>,
+  <span class="key">"timestamp"</span>:  <span class="str">"2025-07-15T14:23:00Z"</span>
+}</pre>
+      <p>Severity is auto-classified by <code>notify-wxo.py</code> using rule / detail / file text keywords — same logic as the dashboard.</p>
+    </div>
+  </div>
+
+  
+  <h2>Part 3 — OpenPages Integration</h2>
+
+  <p>OpenPages is the authoritative GRC record. The wxO agent creates one Issue per violation via REST API. OpenPages' Workflow Engine owns email in production — the wxO <code>send_outlook_email</code> tool is a fallback only, firing when OpenPages is unreachable.</p>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#7c5cd8">①</span> Create schema objects in OpenPages</div>
+    <div class="card-body">
+      <ul>
+        <li>Object type <code>AI-AIDLC-Violation</code> — one record per rule violation, dedup key <code>repo#pr_number#rule</code>, auto-close on PASS</li>
+        <li>Object type <code>AI-AIDLC-Metrics</code> — one record per repo, incremental pass/fail counters + per-rule/per-actor tallies</li>
+        <li>Custom fields: <code>AIDLC_DedupKey</code>, <code>AIDLC_Repo</code>, <code>AIDLC_Project</code>, <code>AIDLC_PRUrl</code>, <code>AIDLC_ControlID</code>, <code>AIDLC_ReportedBy</code></li>
+      </ul>
+      <p>See the full field list in <em>aidlc-guardrail-gate-prod-considerations.html</em>.</p>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#7c5cd8">②</span> Configure Workflow Engine email on <code>AI-AIDLC-Violation</code></div>
+    <div class="card-body">
+      <p>In the OpenPages Workflow Designer, add a notification action on the <strong>Open</strong> stage transition. Once this is working and verified, remove <code>send_outlook_email</code> from the agent tools list and retire the <code>OUTLOOK_*</code> secrets. The production email path is then fully owned by OpenPages — audited, throttled, and retried by the GRC engine.</p>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#7c5cd8">③</span> Trend metrics and reporting</div>
+    <div class="card-body">
+      <ul>
+        <li>Violations by rule over time · violations by actor · pass rate by repo/project</li>
+        <li>Mean time to remediation per severity tier</li>
+        <li>NERC CIP control mapping — CIP-007 R5, CIP-010 R1</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="roadmap-card">
+    <div class="card-head"><span style="color:#7c5cd8">④</span> What closes the AIDLC gaps</div>
+    <div class="card-body">
+      <table>
+        <tr><th>AIDLC Gap</th><th>Closed by</th><th>Status</th></tr>
+        <tr>
+          <td>① Is policy actually enforced?</td>
+          <td>Bob Constitution + GitHub gate (always on, can't be skipped)</td>
+          <td><span class="badge live">Live</span></td>
+        </tr>
+        <tr>
+          <td>② Is the generated code safe?</td>
+          <td>10-point headless audit on every PR diff</td>
+          <td><span class="badge live">Live</span></td>
+        </tr>
+        <tr>
+          <td>③ Who made the change? (agent identity)</td>
+          <td>Vault / SPIFFE — platform layer, out of CI scope</td>
+          <td><span class="badge needed">Platform</span></td>
+        </tr>
+        <tr>
+          <td>④ Authoritative shared record?</td>
+          <td>wxO → OpenPages Issues + Confluent audit spine</td>
+          <td><span class="badge needed">Roadmap</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <strong>The seam is already built.</strong> <code>governance/notify-wxo.py</code> runs on every gate check. The wxO governance agent is written and ready to deploy. Setting <code>WXO_API_KEY</code> + <code>WXO_AGENT_URL</code> and running <code>deploy.sh</code> activates the full pipeline. See <em>aidlc-guardrail-gate-prod-considerations.html</em> for architecture decisions, email routing, and the OpenPages migration path.
+  </div>
+
+  <footer>
+    <p>Made with IBM Bob</p>
+  </footer>
+
+</div>
+</body>
+</html>

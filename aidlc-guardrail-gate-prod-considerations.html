@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AIDLC Guardrail Gate — Production Considerations</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px; line-height: 1.6;
+    background: #ffffff; color: #1f2328;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #57606a; margin-bottom: 32px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 36px 0 8px; padding-bottom: 6px;
+       border-bottom: 2px solid #3b82d4; color: #1f2328; }
+  h3 { font-size: 14px; font-weight: 600; margin: 20px 0 6px; color: #1f2328; }
+  p { margin-bottom: 10px; }
+  ul, ol { margin: 0 0 10px 20px; }
+  li { margin-bottom: 4px; }
+  code {
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 12px; background: #f0f2f5;
+    padding: 1px 5px; border-radius: 3px;
+    border: 1px solid #e5e7eb;
+  }
+  pre {
+    background: #1f2328; color: #e6edf3;
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 12px; padding: 14px 16px;
+    border-radius: 4px; overflow-x: auto;
+    margin: 10px 0;
+  }
+  .callout {
+    padding: 12px 16px; border-radius: 4px; margin: 14px 0;
+    border-left: 4px solid;
+  }
+  .callout.info    { background: #eff6ff; border-color: #3b82d4; color: #1e40af; }
+  .callout.warn    { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+  .callout.success { background: #f0fdf4; border-color: #22c55e; color: #15803d; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+  th { background: #f7f8fa; border: 1px solid #e5e7eb; padding: 7px 10px; text-align: left; font-weight: 600; }
+  td { border: 1px solid #e5e7eb; padding: 7px 10px; vertical-align: top; }
+  tr.highlight td { background: #fffbeb; }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 1px 7px; border-radius: 10px; margin-left: 4px; vertical-align: middle;
+  }
+  .badge.primary  { background: #dcfce7; color: #15803d; }
+  .badge.fallback { background: #fef9c3; color: #854d0e; }
+
+  .layers { display: flex; flex-direction: column; gap: 0; margin: 16px 0 24px; }
+  .layer { border: 1px solid #e5e7eb; border-bottom: none; padding: 12px 16px; }
+  .layer:last-child { border-bottom: 1px solid #e5e7eb; }
+  .layer-head { font-weight: 700; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .layer-body { font-size: 12px; color: #57606a; }
+  .layer.ci  { background: #eff6ff; border-color: #93c5fd; }
+  .layer.wxo { background: #f5f3ff; border-color: #c4b5fd; }
+  .layer.op  { background: #f0fdf4; border-color: #86efac; }
+  .layer-num { font-size: 18px; font-weight: 800; }
+  .layer.ci  .layer-num { color: #3b82d4; }
+  .layer.wxo .layer-num { color: #7c5cd8; }
+  .layer.op  .layer-num { color: #16a34a; }
+
+  .email-flow { margin: 16px 0; }
+  .ef-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .ef-box { flex: 1; border: 1px solid #e5e7eb; padding: 8px 12px; font-size: 12px; border-radius: 4px; }
+  .ef-box.agent { background: #f5f3ff; border-color: #c4b5fd; }
+  .ef-box.ok    { background: #f0fdf4; border-color: #86efac; }
+  .ef-box.fail  { background: #fef9c3; border-color: #fde68a; }
+  .ef-arrow     { padding-top: 10px; color: #57606a; font-size: 16px; flex: 0 0 24px; text-align: center; }
+  .ef-label     { font-size: 11px; color: #57606a; flex: 0 0 110px; padding-top: 10px; }
+
+  .step-list { counter-reset: s; margin: 0 0 16px; }
+  .step-item {
+    counter-increment: s; display: flex; gap: 12px;
+    margin-bottom: 10px; padding: 10px 14px;
+    background: #f7f8fa; border: 1px solid #e5e7eb; border-left: 4px solid #3b82d4;
+  }
+  .step-item::before {
+    content: counter(s);
+    font-size: 16px; font-weight: 700; color: #3b82d4;
+    min-width: 20px; text-align: center; padding-top: 1px;
+  }
+  .step-item .sc { flex: 1; font-size: 13px; }
+  .step-item .st { font-weight: 600; margin-bottom: 2px; }
+
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb;
+           text-align: center; font-size: 11px; color: #57606a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>AIDLC Guardrail Gate</h1>
+  <p class="subtitle">Production Considerations — Architecture · Email Routing · OpenPages · Migration Path<br>
+  Companion to: <em>aidlc-guardrail-gate-setup-roadmap-guide.html</em> · Architecture: <em>architecture-wxo-governance-v2.drawio</em></p>
+
+  <h2>The three-layer architecture</h2>
+  <p>The system is split across three layers. Each one does what the other two cannot.</p>
+
+  <div class="layers">
+    <div class="layer ci">
+      <div class="layer-head"><span class="layer-num">1</span> GitHub Actions — Enforcement</div>
+      <div class="layer-body">
+        Blocks the merge. Deterministic path guard + canary smoke test + Bob headless 10-point audit.
+        Knows: git diff, branch protection, canary token. Runs before any code lands on <code>main</code>.<br>
+        <strong>Can't:</strong> reason about violation content, route to multiple systems, answer questions.
+      </div>
+    </div>
+    <div class="layer wxo">
+      <div class="layer-head"><span class="layer-num">2</span> watsonx Orchestrate — Orchestration Brain</div>
+      <div class="layer-body">
+        Receives raw CI JSON, decides which tools to call and how many times (one Issue call per violation),
+        inspects return values for failures, applies fallback routing, answers ad-hoc governance questions in plain English.
+        One agent serves every repo.<br>
+        <strong>Can't:</strong> own the authoritative GRC record, fire audit-logged email, enforce retention.
+      </div>
+    </div>
+    <div class="layer op">
+      <div class="layer-head"><span class="layer-num">3</span> OpenPages — Authoritative Record</div>
+      <div class="layer-body">
+        One Issue per violation. Dedup on <code>repo + pr_number + rule</code>. Auto-close on PASS.
+        Native Workflow Engine fires email — audited, throttled, retried by the GRC engine.
+        Trend metrics per repo/actor/rule. NERC CIP control mapping (CIP-007 R5, CIP-010 R1).<br>
+        <strong>Can't:</strong> receive a raw CI JSON blob, apply routing logic, answer conversational questions.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <strong>wxO is not just a connector.</strong> It is the reasoning layer between an unstructured CI event and a structured GRC system.
+    Semantic routing, cross-repo fan-out, fallback orchestration, and conversational Q&amp;A are all wxO responsibilities
+    that neither GitHub Actions nor OpenPages can perform.
+  </div>
+
+  <h2>Email routing — primary vs. fallback</h2>
+  <p>Email has two paths. The decision is made at runtime by the agent based on whether the OpenPages tool call succeeds:</p>
+
+  <div class="email-flow">
+    <div class="ef-row">
+      <div class="ef-box agent"><strong>Agent</strong> — calls <code>create_or_update_openpages_issue</code> for each violation</div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">return contains<br>"created" / "updated"</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-box ok">
+        <strong>PRIMARY PATH</strong> <span class="badge primary">preferred</span><br>
+        OpenPages Issue created. OpenPages Workflow Engine fires native email automatically.<br>
+        <span style="font-size:11px;color:#57606a">Audited in GRC log · throttled via IMR bulletin · retried on mail-server failure · template owned by compliance team</span>
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-label">return contains<br>"failed (ignored)"</div>
+      <div class="ef-arrow">→</div>
+      <div class="ef-box fail">
+        <strong>FALLBACK PATH</strong> <span class="badge fallback">safety net only</span><br>
+        OpenPages is down. Agent calls <code>send_outlook_email</code> via Microsoft Graph API.<br>
+        One email summarises all violations that failed to reach OpenPages. Never fires when OpenPages is healthy — no duplicate email.
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th></th><th>OpenPages native (primary)</th><th>wxO Graph API (fallback)</th></tr>
+    <tr><td><strong>When it fires</strong></td><td>OpenPages Issue created/opened</td><td>OpenPages tool call returns failure</td></tr>
+    <tr><td><strong>Audit trail</strong></td><td>GRC audit log — CIP-010 traceable</td><td>wxO conversation history only</td></tr>
+    <tr><td><strong>Retry on failure</strong></td><td>Yes — workflow engine retries automatically</td><td>No — single attempt, fail-open</td></tr>
+    <tr><td><strong>Template ownership</strong></td><td>Compliance team via Workflow Designer</td><td>Python code in <code>send_outlook_email_tool.py</code></td></tr>
+    <tr><td><strong>Throttling</strong></td><td>IMR bulletin scheduling</td><td>None — one email per gate event</td></tr>
+    <tr><td><strong>Credentials needed</strong></td><td>OpenPages service account only</td><td>Azure AD tenant + client ID + secret + mailbox</td></tr>
+  </table>
+
+  <h2>OpenPages — what needs configuring before deploy</h2>
+
+  <div class="callout warn">
+    The REST API tool calls succeed even if custom fields don't exist — OpenPages silently drops unknown fields.
+    Create the schema objects first or violations will be stored without their metadata.
+  </div>
+
+  <h3>1. Create the two object types</h3>
+  <table>
+    <tr><th>Object type name</th><th>Purpose</th><th>Env var</th></tr>
+    <tr><td><code>AI-AIDLC-Violation</code></td><td>One record per rule violation per PR</td><td><code>OPENPAGES_ISSUE_TYPE</code></td></tr>
+    <tr><td><code>AI-AIDLC-Metrics</code></td><td>One record per repo — pass/fail trend counters</td><td><code>OPENPAGES_METRICS_TYPE</code></td></tr>
+  </table>
+
+  <h3>2. Custom fields on <code>AI-AIDLC-Violation</code></h3>
+  <table>
+    <tr><th>Field name</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>AIDLC_DedupKey</code></td><td>Text</td><td>Dedup: <code>repo#pr_number#rule</code></td></tr>
+    <tr><td><code>AIDLC_Repo</code></td><td>Text</td><td>GitHub repository <code>owner/repo</code></td></tr>
+    <tr><td><code>AIDLC_Project</code></td><td>Text</td><td>Logical project key</td></tr>
+    <tr><td><code>AIDLC_PRUrl</code></td><td>URL / Text</td><td>Link to PR for evidence</td></tr>
+    <tr><td><code>AIDLC_ControlID</code></td><td>Text</td><td>Rule / check ID</td></tr>
+    <tr><td><code>AIDLC_ReportedBy</code></td><td>Text</td><td>GitHub username of PR author</td></tr>
+    <tr><td><code>op-iss:RiskRating</code></td><td>Enum</td><td>Critical / High / Medium / Low</td></tr>
+  </table>
+
+  <h3>3. Custom fields on <code>AI-AIDLC-Metrics</code></h3>
+  <table>
+    <tr><th>Field name</th><th>Type</th></tr>
+    <tr><td><code>AIDLC_Repo</code>, <code>AIDLC_Project</code></td><td>Text</td></tr>
+    <tr><td><code>AIDLC_TotalPRs</code>, <code>AIDLC_PassCount</code>, <code>AIDLC_FailCount</code>, <code>AIDLC_PassRate</code></td><td>Number / Text</td></tr>
+    <tr><td><code>AIDLC_ViolationsByRule</code>, <code>AIDLC_ViolationsByActor</code></td><td>Long text (JSON string)</td></tr>
+    <tr><td><code>AIDLC_LastUpdated</code></td><td>Text (ISO 8601)</td></tr>
+  </table>
+
+  <h3>4. Configure Workflow Engine email template</h3>
+  <p>In the OpenPages Workflow Designer, on <code>AI-AIDLC-Violation</code>: add a notification action on the <strong>Open</strong> stage transition. Use <code>{{op-iss:Name}}</code>, <code>{{AIDLC_PRUrl}}</code>, <code>{{op-iss:RiskRating}}</code>, <code>{{AIDLC_ControlID}}</code> in the template body. Optionally add a Closed-transition notification for PASS auto-close events.</p>
+
+  <h2>Complete secrets reference (both repos)</h2>
+
+  <h3>aidlc-guarded — GitHub repo secrets</h3>
+  <table>
+    <tr><th>Name</th><th>Required</th><th>Purpose</th></tr>
+    <tr><td><code>BOBSHELL_API_KEY</code></td><td>✔ Yes</td><td>Headless Bob CI authentication</td></tr>
+    <tr><td><code>GITHUB_TOKEN</code></td><td>✔ Auto</td><td>Post PR comments, push gh-pages</td></tr>
+    <tr><td><code>WXO_API_KEY</code></td><td>✔ For wxO</td><td>IBM Cloud API key → IAM token exchange at runtime</td></tr>
+    <tr><td><code>WXO_AGENT_URL</code></td><td>✔ For wxO</td><td>Full chat-completions URL of the governance agent</td></tr>
+  </table>
+
+  <h3>aidlc-governance-agent — wxO connection secrets / .env</h3>
+  <table>
+    <tr><th>Name</th><th>Required</th><th>Purpose</th></tr>
+    <tr><td><code>OPENPAGES_BASE_URL</code></td><td>✔ Yes</td><td>Base URL of your OpenPages instance (no trailing slash)</td></tr>
+    <tr><td><code>OPENPAGES_API_KEY</code></td><td>✔ Yes</td><td>OpenPages bearer token / API key</td></tr>
+    <tr><td><code>OPENPAGES_ISSUE_TYPE</code></td><td>✔ Yes</td><td>Object type for per-violation Issues</td></tr>
+    <tr><td><code>OPENPAGES_METRICS_TYPE</code></td><td>✔ Yes</td><td>Object type for metrics records</td></tr>
+    <tr><td><code>OPENPAGES_PARENT_ID</code></td><td>Optional</td><td>Parent resource ID (leave blank for root)</td></tr>
+    <tr class="highlight"><td><code>OUTLOOK_TENANT_ID</code></td><td>Fallback only</td><td>Azure AD tenant ID</td></tr>
+    <tr class="highlight"><td><code>OUTLOOK_CLIENT_ID</code></td><td>Fallback only</td><td>Azure AD app client ID — needs <code>Mail.Send</code></td></tr>
+    <tr class="highlight"><td><code>OUTLOOK_CLIENT_SECRET</code></td><td>Fallback only</td><td>Azure AD app client secret</td></tr>
+    <tr class="highlight"><td><code>OUTLOOK_FROM</code></td><td>Fallback only</td><td>Shared mailbox UPN</td></tr>
+    <tr class="highlight"><td><code>OUTLOOK_TO</code></td><td>Fallback only</td><td>Semicolon-separated recipient list</td></tr>
+  </table>
+  <p style="font-size:12px;color:#57606a">Highlighted rows (OUTLOOK_*) can be removed once OpenPages Workflow Engine email is configured and verified working.</p>
+
+  <h2>Migration path — fallback email → OpenPages-native email</h2>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="sc">
+        <div class="st">Create OpenPages schema objects and custom fields</div>
+        Two object types and the custom fields above. Verify with a manual REST API call before proceeding.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="sc">
+        <div class="st">Configure Workflow Engine email template on <code>AI-AIDLC-Violation</code></div>
+        Add notification on Open stage. Test by manually creating a test Issue and confirming email arrives.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="sc">
+        <div class="st">Deploy the governance agent with all 5 tools</div>
+        <code>orchestrate env activate &lt;env&gt; &amp;&amp; bash deploy.sh</code>. Set all <code>OPENPAGES_*</code> env vars. Keep <code>OUTLOOK_*</code> set as fallback for now.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="sc">
+        <div class="st">Run a test PR and confirm email arrives via OpenPages</div>
+        Check the agent conversation log — it will state which path fired. Confirm the OpenPages audit log shows the notification.
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="sc">
+        <div class="st">Remove <code>send_outlook_email</code> from the agent and redeploy</div>
+        Remove from <code>tools:</code> list in <code>governance-agent.yaml</code> and from the email routing instructions. Remove <code>OUTLOOK_*</code> secrets. Run <code>bash deploy.sh</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <strong>Keep the fallback until OpenPages email is verified working.</strong>
+    The cost is five extra env vars. The benefit is that a misconfigured Workflow Engine template does not silently drop alerts.
+  </div>
+
+  <h2>Operational notes</h2>
+
+  <h3>All notification paths are fail-open</h3>
+  <p>Every tool swallows exceptions and returns an error string. The <code>notify-wxo.py</code> CI step also catches all exceptions. An OpenPages, Outlook, or wxO outage <strong>cannot block a merge</strong>.</p>
+
+  <h3>Observability</h3>
+  <table>
+    <tr><th>Where to look</th><th>What it shows</th></tr>
+    <tr><td>wxO agent conversation log</td><td>Which tools fired, return strings, whether fallback email was triggered</td></tr>
+    <tr><td>GitHub Actions run log</td><td>Whether <code>notify-wxo.py</code> received HTTP 200 from the agent</td></tr>
+    <tr><td>GitHub Pages dashboard</td><td>Per-PR verdict history, violation trends</td></tr>
+    <tr><td>OpenPages Issues list</td><td>Per-violation records, dedup, auto-close on PASS</td></tr>
+    <tr><td>OpenPages audit log</td><td>Which Issues triggered email and when (CIP-010 traceable)</td></tr>
+  </table>
+
+  <h3>Dedup key</h3>
+  <p>The dedup key <code>repo#pr_number#rule</code> means re-running the gate on the same PR updates the existing Issue rather than creating duplicates. When the PR is fixed and passes, the same key finds and auto-closes the Issue.</p>
+
+  <h3>Why governance changes go directly to main</h3>
+  <p>The deterministic guard blocks any PR touching <code>.bob/</code>, <code>.github/</code>, <code>governance/</code>, or <code>.bobignore</code>. Governance files are reviewed by the code owner and pushed directly to <code>main</code>. The rulebook is pinned from <code>main</code> before each audit — a PR cannot hand the gate a weakened Constitution to rate itself against.</p>
+
+  <footer>
+    <p>Made with IBM Bob</p>
+  </footer>
+
+</div>
+</body>
+</html>
