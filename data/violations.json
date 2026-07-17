@@ -1,5 +1,31 @@
 [
   {
+    "id": "29610773559-406bcd1",
+    "timestamp": "2026-07-17T20:19:49Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": ".github/workflows/guardrail-gate.yml",
+        "rule": "06-governance-protection.md",
+        "detail": "Protected governance file modified in a pull request; the .bob/, governance/, .github/, and .bobignore paths are admin-only and cannot change through a PR (deterministic block).",
+        "severity": "critical"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "1",
+    "pr_title": "chore: trigger gh-pages branch creation",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/1",
+    "branch": "chore/trigger-pages",
+    "base_ref": "main",
+    "sha": "406bcd1",
+    "commit_message": "fix: correct canary token in smoke test grep (UTILITY- \u2192 PGE-)",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29610773559"
+  },
+  {
     "id": "29610624861-cc98eb8",
     "timestamp": "2026-07-17T20:17:25Z",
     "verdict": "ERROR",
