@@ -135,7 +135,7 @@ def main():
     api_key = os.environ.get("WXO_API_KEY", "")
     agent_url = os.environ.get("WXO_AGENT_URL", "")
     iam_url = os.environ.get("WXO_IAM_URL",
-        "https://iam.platform.saas.ibm.com/siusermgr/api/1.0/apikeys/token")
+        "https://iam.cloud.ibm.com/identity/token")
     if not api_key or not agent_url:
         print("WXO_API_KEY / WXO_AGENT_URL not set — skipping wxO notification "
               "(gate is unaffected).")
