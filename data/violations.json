@@ -1,5 +1,24 @@
 [
   {
+    "id": "29647359664-f7a6838",
+    "timestamp": "2026-07-18T14:06:10Z",
+    "verdict": "PASS",
+    "severity": "none",
+    "violation_count": 0,
+    "violations": [],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "2",
+    "pr_title": "chore: smoke test wxo pipeline end-to-end",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/2",
+    "branch": "test/wxo-pipeline-smoke",
+    "base_ref": "main",
+    "sha": "f7a6838",
+    "commit_message": "chore: smoke test wxo pipeline end-to-end",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29647359664"
+  },
+  {
     "id": "29611037317-64c2d02",
     "timestamp": "2026-07-17T20:24:08Z",
     "verdict": "FAIL",
