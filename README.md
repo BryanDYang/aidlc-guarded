@@ -125,3 +125,4 @@ python app.py                    # PORT env var, default 5060
 
 *Build-layer governance for the AWS AIDLC framework, shown with IBM Bob. Gaps ① and ② are closed here; Gaps ③ (agent identity — Vault/SPIFFE) and ④ (a shared audit spine — Confluent / watsonx.governance) are platform-layer, which this build-layer record is designed to feed.*
 
+# smoke test Sat Jul 18 07:01:43 PDT 2026
