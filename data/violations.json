@@ -1,5 +1,55 @@
 [
   {
+    "id": "29662380617-2b20526",
+    "timestamp": "2026-07-18T21:52:55Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 5,
+    "violations": [
+      {
+        "file": "api/reports.py",
+        "rule": "01-secure-coding.md",
+        "detail": "SQL query built with f-string instead of parameterized query, creating injection risk.",
+        "severity": "critical"
+      },
+      {
+        "file": "api/reports.py",
+        "rule": "01-secure-coding.md",
+        "detail": "User input from request.args.get lacks validation before use in query.",
+        "severity": "critical"
+      },
+      {
+        "file": "api/reports.py",
+        "rule": "02-compliance-headers.md",
+        "detail": "Compliance header does not match required multi-line format with Function, Owner, Control, and Reviewed fields.",
+        "severity": "high"
+      },
+      {
+        "file": "change-log/2026-07-18_1400_add-outage-summary-report.md",
+        "rule": "03-audit-and-change-log.md",
+        "detail": "Change-log incomplete: missing required sections Prompt, Controls applied, Risk notes, and Approval.",
+        "severity": "high"
+      },
+      {
+        "file": "api/reports.py",
+        "rule": "07-aidlc-planning.md",
+        "detail": "Application code changed but diff adds no aidlc-docs planning document.",
+        "severity": "high"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "3",
+    "pr_title": "feat: add outage summary report endpoint",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/3",
+    "branch": "test/openpages-smoke-fail",
+    "base_ref": "main",
+    "sha": "2b20526",
+    "commit_message": "chore: retrigger \u2014 fixed agent field mapping",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29662380617"
+  },
+  {
     "id": "29662204527-21a6b7b",
     "timestamp": "2026-07-18T21:47:18Z",
     "verdict": "FAIL",
