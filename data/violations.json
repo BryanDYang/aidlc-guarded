@@ -1,5 +1,31 @@
 [
   {
+    "id": "29663164693-beb8303",
+    "timestamp": "2026-07-18T22:17:26Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": "governance/notify-wxo.py",
+        "rule": "06-governance-protection.md",
+        "detail": "Protected governance file modified in a pull request; the .bob/, governance/, .github/, and .bobignore paths are admin-only and cannot change through a PR (deterministic block).",
+        "severity": "critical"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "3",
+    "pr_title": "feat: add outage summary report endpoint",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/3",
+    "branch": "test/openpages-smoke-fail",
+    "base_ref": "main",
+    "sha": "beb8303",
+    "commit_message": "fix: revert to IAM auth, switch to IBM Cloud wxO instance",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29663164693"
+  },
+  {
     "id": "29662653139-25cbf89",
     "timestamp": "2026-07-18T22:00:55Z",
     "verdict": "FAIL",
