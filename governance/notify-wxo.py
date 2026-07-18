@@ -102,6 +102,22 @@ def build_event():
 
 
 def iam_token(api_key, iam_url):
+    # wxo-shared uses MCSP auth — try MCSP first, fall back to IAM
+    mcsp_url = iam_url.replace(
+        "https://iam.cloud.ibm.com/identity/token",
+        "https://iam.platform.saas.ibm.com/siusermgr/api/1.0/apikeys/token",
+    )
+    # MCSP exchange
+    if "siusermgr" in mcsp_url or "saas.ibm.com" in iam_url:
+        data = json.dumps({"apikey": api_key}).encode()
+        req = urllib.request.Request(
+            "https://iam.platform.saas.ibm.com/siusermgr/api/1.0/apikeys/token",
+            data=data,
+            headers={"Content-Type": "application/json", "Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            resp = json.load(r)
+            return resp.get("token") or resp["access_token"]
+    # Standard IAM exchange (fallback)
     data = urllib.parse.urlencode({
         "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
         "apikey": api_key,
@@ -134,7 +150,8 @@ def main():
 
     api_key = os.environ.get("WXO_API_KEY", "")
     agent_url = os.environ.get("WXO_AGENT_URL", "")
-    iam_url = os.environ.get("WXO_IAM_URL", "https://iam.cloud.ibm.com/identity/token")
+    iam_url = os.environ.get("WXO_IAM_URL",
+        "https://iam.platform.saas.ibm.com/siusermgr/api/1.0/apikeys/token")
     if not api_key or not agent_url:
         print("WXO_API_KEY / WXO_AGENT_URL not set — skipping wxO notification "
               "(gate is unaffected).")
