@@ -1,5 +1,49 @@
 [
   {
+    "id": "29661451602-7643673",
+    "timestamp": "2026-07-18T21:22:40Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 4,
+    "violations": [
+      {
+        "file": "api/reports.py",
+        "rule": "01-secure-coding.md",
+        "detail": "SQL query built with f-string using unsanitized user input instead of parameterized query",
+        "severity": "critical"
+      },
+      {
+        "file": "api/reports.py",
+        "rule": "02-compliance-headers.md",
+        "detail": "Compliance header does not match required multi-line format with Function, Owner, Control, and Reviewed fields",
+        "severity": "high"
+      },
+      {
+        "file": "change-log/2026-07-18_1400_add-outage-summary-report.md",
+        "rule": "03-audit-and-change-log.md",
+        "detail": "Change-log entry is incomplete, missing required sections Prompt, Controls applied, Risk notes, and Approval",
+        "severity": "high"
+      },
+      {
+        "file": "api/reports.py",
+        "rule": "07-aidlc-planning.md",
+        "detail": "Application code changed but no aidlc-docs planning document was added in the diff",
+        "severity": "high"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "3",
+    "pr_title": "feat: add outage summary report endpoint",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/3",
+    "branch": "test/openpages-smoke-fail",
+    "base_ref": "main",
+    "sha": "7643673",
+    "commit_message": "chore: retrigger guardrail-gate for OpenPages test",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/29661451602"
+  },
+  {
     "id": "29660852307-3fc9802",
     "timestamp": "2026-07-18T21:03:22Z",
     "verdict": "FAIL",
