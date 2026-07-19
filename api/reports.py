@@ -13,7 +13,8 @@ def outage_summary():
     """Return a summary of outages grouped by region."""
     region = request.args.get("region")
     with get_db() as conn:
-        # TODO: parameterise this — using f-string for now to unblock demo
-        query = f"SELECT region, COUNT(*) as count FROM outages WHERE region = '{region}' GROUP BY region"
-        rows = conn.execute(query).fetchall()
+        rows = conn.execute(
+            "SELECT region, COUNT(*) as count FROM outages WHERE region = ? GROUP BY region",
+            (region,),
+        ).fetchall()
         return jsonify([dict(r) for r in rows])
