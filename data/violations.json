@@ -1,5 +1,31 @@
 [
   {
+    "id": "30682766112-c61d95e",
+    "timestamp": "2026-08-01T03:51:05Z",
+    "verdict": "FAIL",
+    "severity": "medium",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": "api/reports.py",
+        "rule": "02-compliance-headers.md",
+        "detail": "The new public route has a malformed compliance header attachment because the decorator line is indented and separated from the function, so the required header is not correctly applied to the route definition.",
+        "severity": "medium"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "4",
+    "pr_title": "[demo] PASS \u2014 governed customers-by-status report",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/4",
+    "branch": "demo/01-compliant-report",
+    "base_ref": "main",
+    "sha": "c61d95e",
+    "commit_message": "feat: add governed customers-by-status report",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682766112"
+  },
+  {
     "id": "29702826701-df9a32a",
     "timestamp": "2026-07-19T20:36:31Z",
     "verdict": "FAIL",
