@@ -7,3 +7,4 @@ utility.db
 .env
 *.env
 ci-demo/
+.DS_Store
