@@ -1,5 +1,49 @@
 [
   {
+    "id": "30684563296-970c9dc",
+    "timestamp": "2026-08-01T04:46:46Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 4,
+    "violations": [
+      {
+        "file": "api/notify.py",
+        "rule": "01-secure-coding.md",
+        "detail": "API key is hardcoded as a literal instead of read from environment variable.",
+        "severity": "critical"
+      },
+      {
+        "file": "api/notify.py",
+        "rule": "02-compliance-headers.md",
+        "detail": "New public function notify_outage is missing the required compliance header.",
+        "severity": "medium"
+      },
+      {
+        "file": "api/notify.py",
+        "rule": "03-audit-and-change-log.md",
+        "detail": "Application code changed but no change-log entry was added in the diff.",
+        "severity": "medium"
+      },
+      {
+        "file": "api/notify.py",
+        "rule": "07-aidlc-planning.md",
+        "detail": "New application code added but no aidlc-docs planning document was included in the diff.",
+        "severity": "high"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "8",
+    "pr_title": "[demo] VIOLATION \u2014 Inline API key (check 1)",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/8",
+    "branch": "demo/03-violation-inline-secret",
+    "base_ref": "main",
+    "sha": "970c9dc",
+    "commit_message": "[demo] VIOLATION \u2014 Inline API key (check 1)",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30684563296"
+  },
+  {
     "id": "30684490869-ba4916b",
     "timestamp": "2026-08-01T04:44:34Z",
     "verdict": "PASS",
