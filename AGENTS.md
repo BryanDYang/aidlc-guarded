@@ -1,6 +1,6 @@
 # Project context — Utility Co Grid Services API (governed)
 
-This is a small Flask outage and customer-service API for a fictional PG&E grid
+This is a small Flask outage and customer-service API for a fictional utility grid
 operations desk. It tracks customers, their meters, and grid outages, with a
 couple of reporting endpoints. Endpoints live under `api/` as Flask blueprints;
 SQLite storage, schema in `db.py`, sample data in `seed.py`. Help the developer

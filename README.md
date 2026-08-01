@@ -2,11 +2,17 @@
 
 > Governance is built *into how the code gets made* — IBM Bob follows an always-on rulebook and plans before it builds — and then **re-proven at the one place every change must pass through: the merge into `main`.** Nothing risky reaches the trunk unchecked, and the check can't be quietly turned off.
 
-This is the **guarded** half of a side-by-side demo. Its unguarded twin starts from identical code; the only difference is the governance layer here. Run the same prompt in both and compare what lands.
+This repository is the governed implementation used by the demo. The current
+rough-demo flow compares a compliant pull request with an intentionally
+violating pull request; it does not require a separate unguarded repository.
 
 ## The story
 
-AI writes code faster than review was built to handle. For a regulated operator like PG&E, "review it later" doesn't scale. The AWS **AIDLC** framework names four gaps: **①** is policy actually enforced? **②** is the generated code safe? **③** who made the change? **④** is there an authoritative record?
+AI writes code faster than review was built to handle. For a regulated or
+operational environment, "review it later" does not scale. The AWS **AIDLC**
+framework names four gaps: **①** is policy actually enforced? **②** is the
+generated code safe? **③** who made the change? **④** is there an authoritative
+record?
 
 Bob closes **① and ②** by moving governance to two places that hold:
 1. **Into the assistant** — an always-on Constitution and a *plan-first* mode, so the safe way is the default way while code is written.
@@ -95,19 +101,23 @@ Enforcement is layered — **deterministic** where it must be, **judgment** wher
 
 **Net effect:** governance and the CI workflow itself can only change by an admin, never through a PR.
 
-**Dashboard** (live, GitHub Pages): pass/fail, violations by rule, group-by-contributor, every verdict.
+**Dashboard** (published from `gh-pages`): pass/fail, violations by rule,
+group-by-contributor, and verdict history. The local `sce-demo` branch contains
+an empty data file; populated records are written to `gh-pages` by CI.
 
 ## Run it
 
-**1 · Fire the demo PR set** — opens 2 compliant + 8 violating PRs; watch the gate pass the good ones and block the rest:
+**1 · Prepare the demo PR set** — opens 2 compliant + 10 violating PRs. Run
+this only before the presentation from a clean demo worktree; it resets and
+force-pushes the demo branches:
 
 ```bash
-ci-demo/run-demo-prs.sh          # the demo driver, alongside this repo
+bash ci-demo/run-demo-prs.sh
 ```
 
 **2 · Try the happy path in Bob** — paste this into Bob in this workspace:
 
-> Hey Bob — I need a new report endpoint: GET /reports/customers-by-status that returns how many customers are in each account status. Build it and open a PR to main
+> Using AIDLC, add a GET /reports/customers-by-status endpoint that returns the number of customers in each account status. Show me the plan and wait for my approval before changing code.
 
 Bob plans it (`aidlc-docs/`), writes compliant code + a change-log, and opens a PR — the gate returns **PASS** and it lands as a green PR on the dashboard.
 
@@ -121,7 +131,24 @@ pip install -r requirements.txt
 python app.py                    # PORT env var, default 5060
 ```
 
+Local browser preview using a browser-safe port:
+
+```bash
+PORT=5080 python app.py
+# open http://127.0.0.1:5080/dashboard/
+```
+
+The local dashboard data file is empty by design. For populated audit history,
+view the GitHub Pages deployment or serve the `origin/gh-pages` branch as
+described in the parent [`README.md`](../README.md).
+
+## Optional enterprise extension
+
+The final workflow step can send verdicts to the sibling
+`aidlc-governance-agent` when `WXO_API_KEY` and `WXO_AGENT_URL` are configured.
+That integration—and its OpenPages or notification tools—is optional and
+fail-open. It is not required for the Bob → PR gate → GitHub evidence demo.
+
 ---
 
 *Build-layer governance for the AWS AIDLC framework, shown with IBM Bob. Gaps ① and ② are closed here; Gaps ③ (agent identity — Vault/SPIFFE) and ④ (a shared audit spine — Confluent / watsonx.governance) are platform-layer, which this build-layer record is designed to feed.*
-
