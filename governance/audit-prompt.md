@@ -2,7 +2,7 @@ You are performing a read-only governance audit of a pull request for this
 repository. The unified diff of the pull request is provided on stdin above
 this instruction block.
 
-Audit the diff against the PG&E AI Safe Constitution in `.bob/rules/`
+Audit the diff against the Utility Co AI Safe Constitution in `.bob/rules/`
 (safe-constitution preamble, secure-coding standards, compliance headers,
 audit/change-log, approved libraries, destructive-operations, governance
 protection). Do not modify any files. Do not audit unchanged code.
