@@ -8,6 +8,8 @@ copies of the existing work.
 ## Files changed
 
 - `.bob/mcp.json`
+- `README.md`
+- `change-log/log.json` (removed)
 - `change-log/2026-07-31_2300_normalize-demo-branches.md`
 
 ## Controls applied
@@ -17,6 +19,8 @@ copies of the existing work.
 - Preserved the original branch tips with dated backup tags before retiring
   experimental smoke-test branches.
 - Kept the generated `gh-pages` branch separate and unchanged.
+- Removed the timestamp marker and temporary JSON record left by the completed
+  WXO pipeline smoke test.
 
 ## Risk notes
 
