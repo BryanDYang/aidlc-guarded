@@ -1,5 +1,24 @@
 [
   {
+    "id": "30684569629-52c1842",
+    "timestamp": "2026-08-01T04:48:23Z",
+    "verdict": "ERROR",
+    "severity": "high",
+    "violation_count": 0,
+    "violations": [],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "10",
+    "pr_title": "[demo] VIOLATION \u2014 Adds pandas (unapproved library, check 6)",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/10",
+    "branch": "demo/08-violation-unapproved-lib",
+    "base_ref": "main",
+    "sha": "52c1842",
+    "commit_message": "[demo] VIOLATION \u2014 Adds pandas (unapproved library, check 6)",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30684569629"
+  },
+  {
     "id": "30684566124-7607eb1",
     "timestamp": "2026-08-01T04:47:04Z",
     "verdict": "FAIL",
