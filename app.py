@@ -18,7 +18,7 @@ Then:
 
 import os
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 
 from db import init_db
 from seed import seed_if_empty
@@ -28,6 +28,9 @@ from api.outages import outages_bp
 from api.reports import reports_bp
 
 
+DASHBOARD_DIR = os.path.join(os.path.dirname(__file__), "dashboard")
+
+
 def create_app():
     app = Flask(__name__)
 
@@ -35,6 +38,15 @@ def create_app():
     app.register_blueprint(meters_bp)
     app.register_blueprint(outages_bp)
     app.register_blueprint(reports_bp)
+
+    @app.route("/dashboard/")
+    @app.route("/dashboard")
+    def dashboard():
+        return send_from_directory(DASHBOARD_DIR, "index.html")
+
+    @app.route("/dashboard/<path:filename>")
+    def dashboard_static(filename):
+        return send_from_directory(DASHBOARD_DIR, filename)
 
     @app.route("/")
     def index():
