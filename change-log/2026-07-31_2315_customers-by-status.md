@@ -7,7 +7,8 @@ number of customers in each account status.
 
 ## Files changed
 
-- `api/reports.py`: Added the read-only aggregate report route.
+- `api/reports.py`: Added the read-only aggregate report function and explicit
+  route registration so its compliance header is directly attached.
 - `aidlc-docs/customers-by-status/01-inception.md`: Recorded the approved plan.
 - `change-log/2026-07-31_2315_customers-by-status.md`: Recorded this decision.
 

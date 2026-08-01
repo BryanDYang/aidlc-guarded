@@ -51,7 +51,6 @@ def meters_by_type():
 # Control:  AC-3   (NERC CIP: CIP-011 R1)
 # Reviewed: 2026-07-31
 # ---------------------------------------------------------------------------
-@reports_bp.route("/customers-by-status", methods=["GET"])
 def customers_by_status():
     """Return customer counts grouped by account status."""
     with get_db() as conn:
@@ -64,3 +63,10 @@ def customers_by_status():
             """
         ).fetchall()
         return jsonify([dict(row) for row in rows])
+
+
+reports_bp.add_url_rule(
+    "/customers-by-status",
+    view_func=customers_by_status,
+    methods=["GET"],
+)
