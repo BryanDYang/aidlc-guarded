@@ -43,3 +43,31 @@ def meters_by_type():
             """
         ).fetchall()
         return jsonify([dict(r) for r in rows])
+
+
+# ---------------------------------------------------------------------------
+# Function: outages_by_region
+# Owner:    grid-platform-team
+# Control:  AC-3   (NERC CIP: CIP-011 R1)
+# Reviewed: 2026-07-31
+# ---------------------------------------------------------------------------
+def outages_by_region():
+    """Return outage totals and affected customers grouped by region."""
+    with get_db() as conn:
+        rows = conn.execute(
+            """
+            SELECT region, COUNT(*) AS outage_count,
+                   SUM(customers_affected) AS customers_affected
+            FROM outages
+            GROUP BY region
+            ORDER BY region
+            """
+        ).fetchall()
+        return jsonify([dict(row) for row in rows])
+
+
+reports_bp.add_url_rule(
+    "/outages-by-region",
+    view_func=outages_by_region,
+    methods=["GET"],
+)
