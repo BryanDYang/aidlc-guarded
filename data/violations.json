@@ -1,5 +1,31 @@
 [
   {
+    "id": "30682961973-c4d1e7c",
+    "timestamp": "2026-08-01T03:57:00Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": ".bob/rules/99-demo-tamper.md",
+        "rule": "06-governance-protection.md",
+        "detail": "Protected governance file modified in a pull request; the .bob/, governance/, .github/, and .bobignore paths are admin-only and cannot change through a PR (deterministic block).",
+        "severity": "critical"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "7",
+    "pr_title": "[demo] BLOCK \u2014 protected governance tampering",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/7",
+    "branch": "demo/10-block-governance-tamper",
+    "base_ref": "main",
+    "sha": "c4d1e7c",
+    "commit_message": "demo: attempt protected governance change",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682961973"
+  },
+  {
     "id": "30682826006-ba4916b",
     "timestamp": "2026-08-01T03:53:18Z",
     "verdict": "PASS",
