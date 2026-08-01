@@ -1,5 +1,24 @@
 [
   {
+    "id": "30684461589-e93c677",
+    "timestamp": "2026-08-01T04:44:18Z",
+    "verdict": "PASS",
+    "severity": "none",
+    "violation_count": 0,
+    "violations": [],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "4",
+    "pr_title": "[demo] PASS \u2014 governed customers-by-status report",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/4",
+    "branch": "demo/01-compliant-report",
+    "base_ref": "main",
+    "sha": "e93c677",
+    "commit_message": "[demo] COMPLIANT \u2014 Add GET /reports/customers-by-status",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30684461589"
+  },
+  {
     "id": "30684447322-8a94b7e",
     "timestamp": "2026-08-01T04:43:57Z",
     "verdict": "PASS",
