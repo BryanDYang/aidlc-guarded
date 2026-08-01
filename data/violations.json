@@ -1,5 +1,31 @@
 [
   {
+    "id": "30682771330-693b34e",
+    "timestamp": "2026-08-01T03:51:33Z",
+    "verdict": "FAIL",
+    "severity": "critical",
+    "violation_count": 1,
+    "violations": [
+      {
+        "file": "api/reports.py",
+        "rule": "01-secure-coding.md",
+        "detail": "SQL query built with f-string interpolation instead of parameterized query",
+        "severity": "critical"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "5",
+    "pr_title": "[demo] FAIL \u2014 intentional string-built SQL",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/5",
+    "branch": "demo/04-violation-string-sql",
+    "base_ref": "main",
+    "sha": "693b34e",
+    "commit_message": "demo: add intentionally unsafe customer city query",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682771330"
+  },
+  {
     "id": "30682766112-c61d95e",
     "timestamp": "2026-08-01T03:51:05Z",
     "verdict": "FAIL",
