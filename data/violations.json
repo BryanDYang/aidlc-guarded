@@ -1,26 +1,7 @@
 [
   {
-    "id": "30682957099-9b94c55",
-    "timestamp": "2026-08-01T03:57:34Z",
-    "verdict": "PASS",
-    "severity": "none",
-    "violation_count": 0,
-    "violations": [],
-    "actor": "BryanDYang",
-    "triggered_by": "BryanDYang",
-    "pr_number": "6",
-    "pr_title": "[demo] PASS \u2014 governed outages-by-region report",
-    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/6",
-    "branch": "demo/02-compliant-outage-regions",
-    "base_ref": "main",
-    "sha": "9b94c55",
-    "commit_message": "feat: add governed outages-by-region report",
-    "repo": "BryanDYang/aidlc-guarded",
-    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682957099"
-  },
-  {
     "id": "30682961973-c4d1e7c",
-    "timestamp": "2026-08-01T03:57:00Z",
+    "timestamp": "2026-08-01T04:38:36Z",
     "verdict": "FAIL",
     "severity": "critical",
     "violation_count": 1,
@@ -43,6 +24,25 @@
     "commit_message": "demo: attempt protected governance change",
     "repo": "BryanDYang/aidlc-guarded",
     "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682961973"
+  },
+  {
+    "id": "30682957099-9b94c55",
+    "timestamp": "2026-08-01T03:57:34Z",
+    "verdict": "PASS",
+    "severity": "none",
+    "violation_count": 0,
+    "violations": [],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "6",
+    "pr_title": "[demo] PASS \u2014 governed outages-by-region report",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/6",
+    "branch": "demo/02-compliant-outage-regions",
+    "base_ref": "main",
+    "sha": "9b94c55",
+    "commit_message": "feat: add governed outages-by-region report",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30682957099"
   },
   {
     "id": "30682826006-ba4916b",
