@@ -1,5 +1,49 @@
 [
   {
+    "id": "30684566124-7607eb1",
+    "timestamp": "2026-08-01T04:47:04Z",
+    "verdict": "FAIL",
+    "severity": "high",
+    "violation_count": 4,
+    "violations": [
+      {
+        "file": "api/admin_delete.py",
+        "rule": "02-compliance-headers.md",
+        "detail": "New route handler delete_customer is missing the required compliance header with NIST control and NERC CIP traceability.",
+        "severity": "high"
+      },
+      {
+        "file": "api/admin_delete.py",
+        "rule": "05-destructive-operations.md",
+        "detail": "Hard DELETE on regulated customer records is prohibited; must use soft-delete pattern with status change and deleted_at timestamp.",
+        "severity": "high"
+      },
+      {
+        "file": "change-log/",
+        "rule": "03-audit-and-change-log.md",
+        "detail": "Missing document \u2014 application code changed under api/ but no change-log entry is added in the same diff.",
+        "severity": "medium"
+      },
+      {
+        "file": "aidlc-docs/",
+        "rule": "07-aidlc-planning.md",
+        "detail": "Missing plan \u2014 application code changed but the diff adds no new aidlc-docs planning document recording the plan for that change.",
+        "severity": "high"
+      }
+    ],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "9",
+    "pr_title": "[demo] VIOLATION \u2014 Hard DELETE on customers table (check 4)",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/9",
+    "branch": "demo/06-violation-hard-delete",
+    "base_ref": "main",
+    "sha": "7607eb1",
+    "commit_message": "[demo] VIOLATION \u2014 Hard DELETE on customers table (check 4)",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30684566124"
+  },
+  {
     "id": "30684563296-970c9dc",
     "timestamp": "2026-08-01T04:46:46Z",
     "verdict": "FAIL",
