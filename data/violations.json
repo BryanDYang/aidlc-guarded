@@ -1,5 +1,24 @@
 [
   {
+    "id": "30684490869-ba4916b",
+    "timestamp": "2026-08-01T04:44:34Z",
+    "verdict": "PASS",
+    "severity": "none",
+    "violation_count": 0,
+    "violations": [],
+    "actor": "BryanDYang",
+    "triggered_by": "BryanDYang",
+    "pr_number": "4",
+    "pr_title": "[demo] PASS \u2014 governed customers-by-status report",
+    "pr_url": "https://github.com/BryanDYang/aidlc-guarded/pull/4",
+    "branch": "demo/01-compliant-report",
+    "base_ref": "main",
+    "sha": "ba4916b",
+    "commit_message": "fix: attach compliance header directly to report function",
+    "repo": "BryanDYang/aidlc-guarded",
+    "run_url": "https://github.com/BryanDYang/aidlc-guarded/actions/runs/30684490869"
+  },
+  {
     "id": "30684461589-e93c677",
     "timestamp": "2026-08-01T04:44:18Z",
     "verdict": "PASS",
